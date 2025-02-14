@@ -17,6 +17,7 @@
  */
 package cn.kstry.framework.core.engine.thread;
 
+import cn.kstry.framework.core.bpmn.StartEvent;
 import cn.kstry.framework.core.bpmn.impl.BasicElementIterable;
 import cn.kstry.framework.core.bus.IterDataItem;
 import cn.kstry.framework.core.bus.ScopeDataOperator;
@@ -113,7 +114,7 @@ public class FragmentTask extends FlowTaskCore<AsyncTaskState> implements Task<A
             scope.setVarData("@"+batchVarNames[1], iterDataItem);
             scope.setVarData(batchVarNames[1], paramList.get(i));
 
-            FlowRegister reg = this.flowRegister.cloneSelf();
+            FlowRegister reg = this.flowRegister.cloneSubFlowRegister((StartEvent) this.flowRegister.getStartElement());
             doExe(this.role, this.storyBus, reg);
         }
     }

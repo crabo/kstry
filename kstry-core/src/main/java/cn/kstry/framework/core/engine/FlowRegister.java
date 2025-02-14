@@ -198,23 +198,6 @@ public class FlowRegister {
         return subFlowRegister;
     }
 
-    public FlowRegister cloneSelf() {
-        AssertUtil.notTrue(this.flowElementStack.isEmpty());
-        Optional<FlowElement> startElement = this.flowElementStack.peek();
-        FlowRegister subFlowRegister = new FlowRegister();
-        subFlowRegister.startElement = startElement.get();
-        subFlowRegister.startEventId = this.startEventId;
-        subFlowRegister.storyId = storyId;
-        subFlowRegister.cycleTimes = 1L;
-        subFlowRegister.monitorTracking = this.monitorTracking;
-        subFlowRegister.requestId = this.requestId;
-        subFlowRegister.businessId = this.businessId;
-        subFlowRegister.adminFuture = this.adminFuture;
-        subFlowRegister.flowElementStack = this.monitorTracking.newTrackingStack();
-        subFlowRegister.flowElementStack.push(null, startElement.get());
-        return subFlowRegister;
-    }
-
     public MonitorTracking getMonitorTracking() {
         AssertUtil.notNull(monitorTracking);
         return monitorTracking;
