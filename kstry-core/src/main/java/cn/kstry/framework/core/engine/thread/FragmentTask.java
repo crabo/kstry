@@ -34,11 +34,13 @@ import cn.kstry.framework.core.exception.KstryException;
 import cn.kstry.framework.core.role.Role;
 import cn.kstry.framework.core.util.AssertUtil;
 import cn.kstry.framework.core.util.GlobalUtil;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.IntStream;
 
 /**
  * 流程片段执行任务
@@ -99,10 +101,16 @@ public class FragmentTask extends FlowTaskCore<AsyncTaskState> implements Task<A
         String[] batchVarNames = startName.substring(startName.indexOf("@")+1).split("-");
 
         //构造循环iterable结构
-        BasicElementIterable iterable = new BasicElementIterable();
-        iterable.setIteSource("var."+batchVarNames[0]);
-        List<Object> paramList = this.getIteratorList(this.flowRegister.getStartElement(), this.storyBus, iterable);
-
+        List<Object> paramList;
+        if(batchVarNames[0].startsWith("WHILE")) {
+            Integer s = Integer.parseInt(batchVarNames[0].replace("WHILE","0"));
+            if(s<1){s = 65536;}
+            paramList = Lists.newArrayList(IntStream.range(0, s).iterator());
+        }else{
+            BasicElementIterable iterable = new BasicElementIterable();
+            iterable.setIteSource("var." + batchVarNames[0]);
+            paramList = this.getIteratorList(this.flowRegister.getStartElement(), this.storyBus, iterable);
+        }
         int size = paramList.size();
         ScopeDataOperator scope = this.storyBus.getScopeDataOperator();
         for(int i=0;i<size;i++){
