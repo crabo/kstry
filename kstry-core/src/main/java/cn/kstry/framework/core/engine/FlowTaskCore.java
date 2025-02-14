@@ -617,7 +617,7 @@ public abstract class FlowTaskCore<T> extends BasicTaskCore<T> {
         return resultList;
     }
 
-    private List<Object> getIteratorList(ServiceTask serviceTask, StoryBus storyBus, ElementIterable elementIterable) {
+    protected List<Object> getIteratorList(FlowElement serviceTask, StoryBus storyBus, ElementIterable elementIterable) {
         MonitorTracking monitorTracking = storyBus.getMonitorTracking();
         ReentrantReadWriteLock.ReadLock readLock = storyBus.getScopeDataOperator().readLock();
         readLock.lock();

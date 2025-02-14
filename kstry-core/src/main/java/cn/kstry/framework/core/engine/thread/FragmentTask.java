@@ -17,6 +17,9 @@
  */
 package cn.kstry.framework.core.engine.thread;
 
+import cn.kstry.framework.core.bpmn.impl.BasicElementIterable;
+import cn.kstry.framework.core.bus.IterDataItem;
+import cn.kstry.framework.core.bus.ScopeDataOperator;
 import cn.kstry.framework.core.bus.StoryBus;
 import cn.kstry.framework.core.engine.FlowRegister;
 import cn.kstry.framework.core.engine.FlowTaskCore;
@@ -33,6 +36,7 @@ import cn.kstry.framework.core.util.GlobalUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -61,7 +65,14 @@ public class FragmentTask extends FlowTaskCore<AsyncTaskState> implements Task<A
             asyncTaskSwitch.await();
             adminFuture = flowRegister.getAdminFuture();
             AssertUtil.notTrue(adminFuture.isCancelled(flowRegister.getStartEventId()), ExceptionEnum.ASYNC_TASK_INTERRUPTED, "Task interrupted. Story task was interrupted! taskName: {}", getTaskName());
-            doExe(this.role, this.storyBus, this.flowRegister);
+
+            //特殊子流程? 执行for循环
+            String startName = this.flowRegister.getStartElement().getName();
+            if(startName!=null && startName.indexOf("@")>0){
+                doIterateExecSubProcess(startName);
+            }else {
+                doExe(this.role, this.storyBus, this.flowRegister);
+            }
             return AsyncTaskState.SUCCESS;
         } catch (Throwable e) {
             if (adminFuture != null) {
@@ -76,6 +87,34 @@ public class FragmentTask extends FlowTaskCore<AsyncTaskState> implements Task<A
             return AsyncTaskState.ERROR;
         } finally {
             engineModule.getThreadSwitchHookProcessor().clear(threadSwitchHookObjectMap, storyBus.getScopeDataOperator());
+        }
+    }
+
+    /**
+     * 从子流程名称，提取遍历配置，实现子流程for循环
+     */
+    private void doIterateExecSubProcess(String startName){
+        // 格式如: subproc01-@liOrders-order ,遍历liOrders，并写入变量order中
+        String[] batchVarNames = startName.substring(startName.indexOf("@")+1).split("-");
+
+        //构造循环iterable结构
+        BasicElementIterable iterable = new BasicElementIterable();
+        iterable.setIteSource("var."+batchVarNames[0]);
+        List<Object> paramList = this.getIteratorList(this.flowRegister.getStartElement(), this.storyBus, iterable);
+
+        int size = paramList.size();
+        ScopeDataOperator scope = this.storyBus.getScopeDataOperator();
+        for(int i=0;i<size;i++){
+            //允许业务设置@order=false，提前结束循环
+            if(scope.getVarData("@"+batchVarNames[1]).orElse(true).equals(false))
+                break;
+
+            IterDataItem<Object> iterDataItem = new IterDataItem<>(false, paramList.get(i), paramList, i, size);
+            scope.setVarData("@"+batchVarNames[1], iterDataItem);
+            scope.setVarData(batchVarNames[1], paramList.get(i));
+
+            FlowRegister reg = this.flowRegister.cloneSelf();
+            doExe(this.role, this.storyBus, reg);
         }
     }
 }
