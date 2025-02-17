@@ -110,6 +110,7 @@ public class FragmentTask extends FlowTaskCore<AsyncTaskState> implements Task<A
             BasicElementIterable iterable = new BasicElementIterable();
             iterable.setIteSource("var." + batchVarNames[0]);
             paramList = this.getIteratorList(this.flowRegister.getStartElement(), this.storyBus, iterable);
+            AssertUtil.notNull(paramList,ExceptionEnum.ITERATE_ITEM_ERROR, startName+"子流程无法启动，因总线未设置循环变量:"+batchVarNames[0]);
         }
         int size = paramList.size();
         ScopeDataOperator scope = this.storyBus.getScopeDataOperator();
