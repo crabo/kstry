@@ -107,6 +107,14 @@ public class TaskParamParser {
                 params[i] = ElementParserUtil.initPrimitive(iDef.getParamType());
             }
             if (iDef.notNeedInject()) {
+                // 非注解参数？尝试字段名读取
+                if(StringUtils.isBlank(iDef.getTargetName()) && !iDef.getFieldName().startsWith("arg")){
+                    Object r = storyBus.getValue(ScopeTypeEnum.VARIABLE, iDef.getFieldName()).orElse(
+                            storyBus.getValue(ScopeTypeEnum.STABLE, iDef.getFieldName()).orElse(null));
+                    if(r!=null && r!= PropertyUtil.GET_PROPERTY_ERROR_SIGN){
+                        params[i] = r;
+                    }
+                }
                 continue;
             }
 
