@@ -34,7 +34,7 @@ import java.util.Optional;
 public class SequenceFlowExpression extends BaseElementImpl implements Expression {
 
     private static final List<ConditionExpressionImpl> actualWorkExpressionList =
-            Lists.newArrayList(new BooleanConditionExpression(), new RoleConditionExpression(), new SpelConditionExpression());
+            Lists.newArrayList(new BooleanConditionExpression(), new RoleConditionExpression(), new QLExpConditionExpression());
 
     /**
      * 表达式

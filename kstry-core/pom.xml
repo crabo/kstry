@@ -115,6 +115,13 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>QLExpress</artifactId>
+            <version>3.3.4</version>
+        </dependency>
+
+
         <!-- validator -->
         <dependency>
             <groupId>org.hibernate</groupId>
