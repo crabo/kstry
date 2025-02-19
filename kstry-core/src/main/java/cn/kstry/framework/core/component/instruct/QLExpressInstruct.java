@@ -18,6 +18,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Optional;
 
@@ -32,6 +34,8 @@ public class QLExpressInstruct implements TaskComponentRegister {
     private static ExpressRunner PARSER = new ExpressRunner();
 
     private final TypeConverterProcessor typeConverterProcessor;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public QLExpressInstruct(TypeConverterProcessor typeConverterProcessor) {
         this.typeConverterProcessor = typeConverterProcessor;
@@ -56,7 +60,7 @@ public class QLExpressInstruct implements TaskComponentRegister {
 
         String script = instructContent.getContent();
         try {
-            IExpressContext<String, Object> context= new ExpressionBusContext(scopeDataOperator);
+            IExpressContext<String, Object> context= new ExpressionBusContext(scopeDataOperator,this.applicationContext);
             Object result = PARSER.execute(script, context, null, true, false);
 
             if (result != null && property != null && !StringUtils.isAllBlank(property.getReturnType(), property.getResultConverter())) {
@@ -88,8 +92,10 @@ public class QLExpressInstruct implements TaskComponentRegister {
     static class ExpressionBusContext implements IExpressContext<String,Object> {
 
         ScopeDataOperator scopeData;
-        public ExpressionBusContext(ScopeDataOperator scopeData){
+        ApplicationContext context;
+        public ExpressionBusContext(ScopeDataOperator scopeData, ApplicationContext context){
             this.scopeData = scopeData;
+            this.context = context;
         }
         @Override
         public Object get(Object key) {
@@ -99,8 +105,8 @@ public class QLExpressInstruct implements TaskComponentRegister {
                 return this.scopeData.getVarScope();
             }else if("req".equals(key)){
                 return this.scopeData.getReqScope();
-            }else if(key instanceof String && ((String) key).startsWith("#")){
-                // return this.scopeData.getMonitorTracking().getApplicationContext().getBean(((String) key).substring(1));
+            }else if(key instanceof String && ((String) key).startsWith("@")){
+                return this.context.getBean(((String) key).substring(1));
             }
             return null;
         }
