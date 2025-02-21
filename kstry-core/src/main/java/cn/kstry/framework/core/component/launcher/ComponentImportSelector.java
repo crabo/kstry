@@ -154,6 +154,11 @@ public class ComponentImportSelector extends BasicLauncher {
         return new QLExpressInstruct(typeConverterProcessor);
     }
 
+    /* @Bean
+    public TriggerProcessPreheat triggerProcessPreheat(StoryEngine storyEngine) {
+        return new TriggerProcessPreheat(storyEngine);
+    }*/
+
     @Bean
     public ExpressionAliasParser expressionAliasParser(List<ExpressionAliasRegister> registerList) {
         return new ExpressionAliasParser(registerList);
@@ -167,11 +172,6 @@ public class ComponentImportSelector extends BasicLauncher {
     @Bean
     public StoryEnginePreheatService storyEnginePreheatService() {
         return new StoryEnginePreheatService();
-    }
-
-    @Bean
-    public TriggerProcessPreheat triggerProcessPreheat(StoryEngine storyEngine) {
-        return new TriggerProcessPreheat(storyEngine);
     }
 
     @Bean
