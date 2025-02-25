@@ -32,6 +32,9 @@ public class JsScriptProperty {
     @JSONField(name = "invoke-method")
     private String invokeMethod;
 
+    @JSONField(name = "invoke-source")
+    private String invokeSource;
+
     @JSONField(name = "result-converter")
     private String resultConverter;
 
@@ -57,6 +60,14 @@ public class JsScriptProperty {
 
     public void setInvokeMethod(String invokeMethod) {
         this.invokeMethod = invokeMethod;
+    }
+
+    public void setInvokeSource(String invokeSource) {
+        this.invokeSource = invokeSource;
+    }
+
+    public String getInvokeSource() {
+        return invokeSource;
     }
 
     public String getResultConverter() {

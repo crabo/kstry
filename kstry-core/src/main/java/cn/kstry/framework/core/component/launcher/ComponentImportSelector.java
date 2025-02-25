@@ -28,6 +28,7 @@ import cn.kstry.framework.core.component.expression.ExpressionAliasParser;
 import cn.kstry.framework.core.component.expression.ExpressionAliasRegister;
 import cn.kstry.framework.core.component.instruct.JsScriptInstruct;
 import cn.kstry.framework.core.component.instruct.QLExpressInstruct;
+import cn.kstry.framework.core.component.instruct.SqlInstruct;
 import cn.kstry.framework.core.component.limiter.strategy.DemotionFailAcquireStrategy;
 import cn.kstry.framework.core.component.limiter.strategy.ExceptionFailAcquireStrategy;
 import cn.kstry.framework.core.component.limiter.strategy.IgnoreFailAcquireStrategy;
@@ -152,6 +153,11 @@ public class ComponentImportSelector extends BasicLauncher {
     @Bean
     public QLExpressInstruct qlExpressInstruct(TypeConverterProcessor typeConverterProcessor) {
         return new QLExpressInstruct(typeConverterProcessor);
+    }
+
+    @Bean
+    public SqlInstruct sqlInstruct(TypeConverterProcessor typeConverterProcessor) {
+        return new SqlInstruct(typeConverterProcessor);
     }
 
     /* @Bean
