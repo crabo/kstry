@@ -35,6 +35,8 @@ import java.util.Optional;
  *   returnType: 返回对象类型，可为null
  *   returnTarget: ['res', 'sta.v1', 'var.v1'] , 将返回值写入这些存储域
  *
+ *   使用sql变量绑定: select ..from a where k1>:var.k1 and k2==:sta.k2
+ *
  * @author crabo Yang, Feb 2025
  */
 public class SqlInstruct implements TaskComponentRegister {
